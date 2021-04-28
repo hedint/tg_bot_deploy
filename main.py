@@ -18,58 +18,48 @@ logger = logging.getLogger(__name__)
 TOKEN = '1752966025:AAH4HsOL_7g7xRb8efZTeDNKBp6LyeT0fx4'
 
 
-# Define a few command handlers. These usually take the two arguments update and
-# context. Error handlers also receive the raised TelegramError object in error.
-def start(update, context):
-    """Send a message when the command /start is issued."""
-    update.message.reply_text('Hi!')
 
-
-def help(update, context):
-    """Send a message when the command /help is issued."""
-    update.message.reply_text('Help!')
-
-
+# Определяем функцию-обработчик сообщений.
+# У неё два параметра, сам бот и класс updater, принявший сообщение.
 def echo(update, context):
-    """Echo the user message."""
-    update.message.reply_text(update.message.text)
-
-
-def error(update, context):
-    """Log Errors caused by Updates."""
-    logger.warning('Update "%s" caused error "%s"', update, context.error)
+    # У объекта класса Updater есть поле message,
+    # являющееся объектом сообщения.
+    # У message есть поле text, содержащее текст полученного сообщения,
+    # а также метод reply_text(str),
+    # отсылающий ответ пользователю, от которого получено сообщение.
+    update.message.reply_text(f"Я получил сообщение {update.message.text}")
 
 
 def main():
-    """Start the bot."""
-    # Create the Updater and pass it your bot's token.
-    # Make sure to set use_context=True to use the new context based callbacks
-    # Post version 12 this will no longer be necessary
-    updater = Updater(TOKEN, use_context=True)
+    # Создаём объект updater.
+    # Вместо слова "TOKEN" надо разместить полученный от @BotFather токен
+    updater = Updater(os.getenv("TOKEN"), use_context=True)
 
-    # Get the dispatcher to register handlers
+    # Получаем из него диспетчер сообщений.
     dp = updater.dispatcher
 
-    # on different commands - answer in Telegram
-    dp.add_handler(CommandHandler("start", start))
-    dp.add_handler(CommandHandler("help", help))
+    # Создаём обработчик сообщений типа Filters.text
+    # из описанной выше функции echo()
+    # После регистрации обработчика в диспетчере
+    # эта функция будет вызываться при получении сообщения
+    # с типом "текст", т. е. текстовых сообщений.
+    text_handler = MessageHandler(Filters.text, echo)
 
-    # on noncommand i.e message - echo the message on Telegram
-    dp.add_handler(MessageHandler(Filters.text, echo))
+    # Зарегистрируем их в диспетчере.
+    dp.add_handler(text_handler)
 
-    # log all errors
-    dp.add_error_handler(error)
-
+    # Запускаем цикл приема и обработки сообщений.
     # Start the Bot
     updater.start_webhook(listen="0.0.0.0",
                           port=int(PORT),
                           url_path=TOKEN, webhook_url='https://tg-test-bot-volodin.herokuapp.com/')
 
-    # Run the bot until you press Ctrl-C or the process receives SIGINT,
-    # SIGTERM or SIGABRT. This should be used most of the time, since
-    # start_polling() is non-blocking and will stop the bot gracefully.
+    # Ждём завершения приложения.
+    # (например, получения сигнала SIG_TERM при нажатии клавиш Ctrl+C)
     updater.idle()
 
+
+# Запускаем функцию main() в случае запуска скрипта.
 
 if __name__ == '__main__':
     main()
