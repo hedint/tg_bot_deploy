@@ -1,53 +1,76 @@
-# Импортируем необходимые классы.
-from dotenv import load_dotenv
-from telegram.ext import Updater, MessageHandler, Filters
-from telegram.ext import CallbackContext, CommandHandler
+"""
+Simple Bot to reply to Telegram messages taken from the python-telegram-bot examples.
+Deployed using heroku.
+Author: liuhh02 https://medium.com/@liuhh02
+"""
+
+import logging
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 import os
 
-load_dotenv()
+PORT = int(os.environ.get('PORT', 5000))
+
+# Enable logging
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    level=logging.INFO)
+
+logger = logging.getLogger(__name__)
+TOKEN = '1752011319:AAEGOmi0nm7tuCxZAcJZacTTxwjnm0qO_MI'
 
 
-# Определяем функцию-обработчик сообщений.
-# У неё два параметра, сам бот и класс updater, принявший сообщение.
+# Define a few command handlers. These usually take the two arguments update and
+# context. Error handlers also receive the raised TelegramError object in error.
+def start(update, context):
+    """Send a message when the command /start is issued."""
+    update.message.reply_text('Hi!')
+
+
+def help(update, context):
+    """Send a message when the command /help is issued."""
+    update.message.reply_text('Help!')
+
+
 def echo(update, context):
-    # У объекта класса Updater есть поле message,
-    # являющееся объектом сообщения.
-    # У message есть поле text, содержащее текст полученного сообщения,
-    # а также метод reply_text(str),
-    # отсылающий ответ пользователю, от которого получено сообщение.
-    update.message.reply_text(f"Я получил сообщение {update.message.text}")
+    """Echo the user message."""
+    update.message.reply_text(update.message.text)
+
+
+def error(update, context):
+    """Log Errors caused by Updates."""
+    logger.warning('Update "%s" caused error "%s"', update, context.error)
 
 
 def main():
-    # Создаём объект updater.
-    # Вместо слова "TOKEN" надо разместить полученный от @BotFather токен
-    updater = Updater(os.getenv("TOKEN"), use_context=True)
+    """Start the bot."""
+    # Create the Updater and pass it your bot's token.
+    # Make sure to set use_context=True to use the new context based callbacks
+    # Post version 12 this will no longer be necessary
+    updater = Updater(TOKEN, use_context=True)
 
-    # Получаем из него диспетчер сообщений.
+    # Get the dispatcher to register handlers
     dp = updater.dispatcher
 
-    # Создаём обработчик сообщений типа Filters.text
-    # из описанной выше функции echo()
-    # После регистрации обработчика в диспетчере
-    # эта функция будет вызываться при получении сообщения
-    # с типом "текст", т. е. текстовых сообщений.
-    text_handler = MessageHandler(Filters.text, echo)
+    # on different commands - answer in Telegram
+    dp.add_handler(CommandHandler("start", start))
+    dp.add_handler(CommandHandler("help", help))
 
-    # Зарегистрируем их в диспетчере.
-    dp.add_handler(text_handler)
+    # on noncommand i.e message - echo the message on Telegram
+    dp.add_handler(MessageHandler(Filters.text, echo))
 
-    # Запускаем цикл приема и обработки сообщений.
+    # log all errors
+    dp.add_error_handler(error)
+
+    # Start the Bot
     updater.start_webhook(listen="0.0.0.0",
-                          port=int(os.environ.get("PORT", 5000)),
-                          url_path=os.getenv("TOKEN"))
-    print('PORT', os.environ.get("PORT", 5000))
-    updater.bot.setWebhook('https://tg-test-bot-volodin.herokuapp.com/' + os.getenv("TOKEN"))
+                          port=int(PORT),
+                          url_path=TOKEN)
+    updater.bot.setWebhook('https://tg-test-bot-volodin.herokuapp.com/' + TOKEN)
 
-    # Ждём завершения приложения.
-    # (например, получения сигнала SIG_TERM при нажатии клавиш Ctrl+C)
+    # Run the bot until you press Ctrl-C or the process receives SIGINT,
+    # SIGTERM or SIGABRT. This should be used most of the time, since
+    # start_polling() is non-blocking and will stop the bot gracefully.
     updater.idle()
 
 
-# Запускаем функцию main() в случае запуска скрипта.
 if __name__ == '__main__':
     main()
