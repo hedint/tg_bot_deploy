@@ -15,7 +15,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
                     level=logging.INFO)
 
 logger = logging.getLogger(__name__)
-TOKEN = '1752011319:AAEGOmi0nm7tuCxZAcJZacTTxwjnm0qO_MI'
+TOKEN = '1752966025:AAH4HsOL_7g7xRb8efZTeDNKBp6LyeT0fx4'
 
 
 # Define a few command handlers. These usually take the two arguments update and
