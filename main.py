@@ -40,6 +40,7 @@ def main():
     updater.start_webhook(listen="0.0.0.0",
                           port=int(os.environ.get("PORT", 5000)),
                           url_path=os.getenv("TOKEN"))
+    updater.bot.setWebhook('https://tg-test-bot-volodin.herokuapp.com/' + os.getenv("TOKEN"))
 
     # Ждём завершения приложения.
     # (например, получения сигнала SIG_TERM при нажатии клавиш Ctrl+C)
