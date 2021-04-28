@@ -1,8 +1,7 @@
 import logging
 import os
-
+import logging
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
-
 
 def start(update, context):
     update.effective_message.reply_text("Hi!")
@@ -18,7 +17,7 @@ if __name__ == "__main__":
     NAME = "tg-test-bot-volodin"
 
     # Port is given by Heroku
-    PORT = os.environ.get('PORT')
+    PORT = os.environ.get('PORT', 80)
 
     # Enable logging
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -37,4 +36,7 @@ if __name__ == "__main__":
                           port=int(PORT),
                           url_path=TOKEN,
                           webhook_url=f"https://{NAME}.herokuapp.com/{TOKEN}")
+    logger.error(f"https://{NAME}.herokuapp.com/{TOKEN}")
+    logger.error(f"https://{NAME}.herokuapp.com/{PORT}")
+
     updater.idle()
