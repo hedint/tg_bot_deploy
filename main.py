@@ -17,7 +17,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 TOKEN = '1752966025:AAH4HsOL_7g7xRb8efZTeDNKBp6LyeT0fx4'
 
-
+logger.error(msg="BLABLABLA")
 
 # Определяем функцию-обработчик сообщений.
 # У неё два параметра, сам бот и класс updater, принявший сообщение.
@@ -52,7 +52,7 @@ def main():
     # Start the Bot
     updater.start_webhook(listen="0.0.0.0",
                           port=int(PORT),
-                          url_path=TOKEN, webhook_url='https://tg-test-bot-volodin.herokuapp.com/')
+                          url_path=TOKEN, webhook_url='https://tg-test-bot-volodin.herokuapp.com/'+TOKEN)
 
     # Ждём завершения приложения.
     # (например, получения сигнала SIG_TERM при нажатии клавиш Ctrl+C)
