@@ -50,9 +50,8 @@ def main():
 
     # Запускаем цикл приема и обработки сообщений.
     # Start the Bot
-    updater.start_webhook(listen="0.0.0.0",
-                          port=int(PORT),
-                          url_path=TOKEN, webhook_url='https://tg-test-bot-volodin.herokuapp.com/'+TOKEN)
+    updater.start_polling()
+
 
     # Ждём завершения приложения.
     # (например, получения сигнала SIG_TERM при нажатии клавиш Ctrl+C)
